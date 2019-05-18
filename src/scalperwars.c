@@ -26,6 +26,10 @@ void gameLoop();
 void printLocale(int id);
 void printTicketStats(int id);
 void playerAction();
+void travel();
+int getActionInput();
+
+void defaultInit();
 
 int dumbTix[3];
 
@@ -38,10 +42,8 @@ int score = 0;
 int main()
 {
 	/* Initialization stuff */
-	dumbTix[N_BUFFALO] 	= 20;
-	dumbTix[S_BUFFALO] 	= 30;
-	dumbTix[ORCHARD]	= 35;
-	
+	defaultInit();
+
 	printTitle(" SCALPER WARS ");
 	mainMenu();
 	while(gameRunning) {
@@ -50,6 +52,13 @@ int main()
 	printTitle("GAME OVER");
 	printf("Your score was %d\n\n", score);
 
+}
+
+void defaultInit()
+{
+		dumbTix[N_BUFFALO] = 20;
+		dumbTix[S_BUFFALO] = 30;
+		dumbTix[ORCHARD]   = 35;
 }
 
 void printTitle(char str[])
@@ -89,8 +98,6 @@ void gameLoop()
 	printTicketStats(currentLocale);
 	// Select Action
 	playerAction();
-	// Buy/Sell/Travel
-	
 }
 
 void printLocale(int locationID)
@@ -122,24 +129,50 @@ void playerAction()
 {
 	printf("What choo gonna do?\n");
 	printf("\t1) Buy\n\t2) Sell\n\t3) Jet\n\n? ");
-	char c;
-	while((c = getchar()) != EOF && c != '\n') {
-		if(!isdigit(c)) 
-			printf("What? Enter a number 1-3, yo\n? ");
-		switch(c) {
-			case '1':
-				printf("Buy!\n");
-				break;
-			case '2':
-				printf("Sell!\n");
-				break;
-			case '3':
-				printf("Jet!\n");
-				break;
-			default:
-				printf("What?? I don't understand %c\n", c);
-				playerAction();
-				break;
-		}
+	int c = getActionInput();
+	if(c < 1 || c > 3) {
+			printf("What?? You can't do that %d.\n", c);
+			playerAction();
 	}
+	switch(c) {
+		case 1:
+			printf("Buy!\n");
+			break;
+		case 2:
+			printf("Sell!\n");
+			break;
+		case 3:
+			printf("Jet!\n");
+			travel();
+			break;
+		default:
+			printf("What?? I don't understand %c\n", c);
+			playerAction();
+			break;
+	}
+}
+
+void travel()
+{
+	printf("Where to?\n");
+	printf("\t1) North Buffalo\n");
+	printf("\t2) South Buffalo\n");
+	printf("\t3) Orchard Park\n");
+	int l = getActionInput();
+	if(l < 1 || l > 3) {
+			printf("Where?? Try again buddy.\n");
+			travel();
+	}
+	currentLocale = l - 1;
+}
+
+int getActionInput()
+{
+		int c;
+		int i = -1;
+		while((c = getchar()) != EOF && c != '\n') {
+			if(isdigit(c))
+				i = c - '0';
+		}
+		return i;
 }
