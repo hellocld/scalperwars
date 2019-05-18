@@ -19,14 +19,18 @@
 
 
 void printTitle(char str[]);
-//void printHeader(char str[]);
+void printHeader(char str[]);
+void printBar();
 
 void mainMenu();
 void gameLoop();
 void printLocale(int id);
 void printTicketStats(int id);
 void playerAction();
+
+void buy();
 void travel();
+
 int getActionInput();
 
 void defaultInit();
@@ -37,6 +41,8 @@ int gameRunning = 1;
 
 int day = 0;
 int currentLocale = 0;
+int tixHeld[1];
+int cash = 500;
 int score = 0;
 
 int main()
@@ -50,15 +56,17 @@ int main()
 			gameLoop();
 	}
 	printTitle("GAME OVER");
-	printf("Your score was %d\n\n", score);
+	printf("Your score was %d\n\n", cash);
 
 }
 
 void defaultInit()
 {
-		dumbTix[N_BUFFALO] = 20;
-		dumbTix[S_BUFFALO] = 30;
-		dumbTix[ORCHARD]   = 35;
+	dumbTix[N_BUFFALO] = 20;
+	dumbTix[S_BUFFALO] = 30;
+	dumbTix[ORCHARD]   = 35;
+
+	tixHeld[0] = 0;
 }
 
 void printTitle(char str[])
@@ -74,6 +82,18 @@ void printTitle(char str[])
 	printf("\n\n");
 }
 
+void printHeader(char str[])
+{
+	printf("********** %s *********\n\n", str);
+}
+
+void printBar()
+{
+	for(int i = 0; i < 80; ++i)
+		printf("*");
+	printf("\n");
+}
+
 void mainMenu()
 {
 	printf("Welcome to Scalper Wars!\n");
@@ -86,6 +106,7 @@ void mainMenu()
 
 void gameLoop()
 {
+	printBar();
 	++day;
 	if(day > 30) {
 		gameRunning = 0;
@@ -95,6 +116,8 @@ void gameLoop()
 	printf("WELCOME TO ");
 	printLocale(currentLocale);
 	printf("It's day %d of 30\n\n", day);
+	printf("\tCash: $%d\n", cash);
+	printf("\tTickets held: %d\n", tixHeld[0]);
 	printTicketStats(currentLocale);
 	// Select Action
 	playerAction();
@@ -137,6 +160,7 @@ void playerAction()
 	switch(c) {
 		case 1:
 			printf("Buy!\n");
+			buy();
 			break;
 		case 2:
 			printf("Sell!\n");
@@ -164,6 +188,26 @@ void travel()
 			travel();
 	}
 	currentLocale = l - 1;
+}
+
+void buy()
+{
+	printf("How many? ");
+	char s[MAXSTRING];
+	char c;
+	int i = 0;
+	for(i = 0; (c = getchar()) != EOF && c != '\n'; ++i) {
+		if(!isdigit(c)) {
+			printf("That's not a number, yo!\n");
+			buy();
+		}
+		s[i] = c;
+	}
+	s[++i] = '\0';
+	int num = atoi(s);
+	printf("Buying %d tickets aka %s tix...\n", num, s);
+	cash -= num * dumbTix[currentLocale];
+	tixHeld[0] += num;
 }
 
 int getActionInput()
