@@ -26,6 +26,8 @@ void mainMenu();
 void gameLoop();
 void printLocale(int id);
 void printTicketStats(int id);
+void printPlayerStats();
+
 void playerAction();
 
 void buy();
@@ -53,7 +55,7 @@ int main()
 	printTitle(" SCALPER WARS ");
 	mainMenu();
 	while(gameRunning) {
-			gameLoop();
+		gameLoop();
 	}
 	printTitle("GAME OVER");
 	printf("Your score was %d\n\n", cash);
@@ -107,7 +109,6 @@ void mainMenu()
 void gameLoop()
 {
 	printBar();
-	++day;
 	if(day > 30) {
 		gameRunning = 0;
 		return;
@@ -116,8 +117,6 @@ void gameLoop()
 	printf("WELCOME TO ");
 	printLocale(currentLocale);
 	printf("It's day %d of 30\n\n", day);
-	printf("\tCash: $%d\n", cash);
-	printf("\tTickets held: %d\n", tixHeld[0]);
 	printTicketStats(currentLocale);
 	// Select Action
 	playerAction();
@@ -148,8 +147,16 @@ void printTicketStats(int locationID)
 	printf("\t- Dumb tickets: $%d\n\n", dumbTix[locationID]);
 }
 
+void printPlayerStats()
+{
+	printBar();
+	printf("\tCash:\t$%d\n", cash);
+	printf("\tTix:\t%d\n", tixHeld[0]);
+}
+
 void playerAction()
 {
+	printPlayerStats();
 	printf("What choo gonna do?\n");
 	printf("\t1) Buy\n\t2) Sell\n\t3) Jet\n\n? ");
 	int c = getActionInput();
@@ -184,10 +191,11 @@ void travel()
 	printf("\t3) Orchard Park\n");
 	int l = getActionInput();
 	if(l < 1 || l > 3) {
-			printf("Where?? Try again buddy.\n");
-			travel();
+		printf("Where?? Try again buddy.\n");
+		travel();
 	}
 	currentLocale = l - 1;
+	++day;
 }
 
 void buy()
@@ -205,8 +213,12 @@ void buy()
 	}
 	s[++i] = '\0';
 	int num = atoi(s);
-	printf("Buying %d tickets aka %s tix...\n", num, s);
-	cash -= num * dumbTix[currentLocale];
+	int cost = num * dumbTix[currentLocale];
+	if(cost > cash) {
+		printf("You can't afford that!\n");
+		buy();
+	}
+	cash -= cost;
 	tixHeld[0] += num;
 }
 
