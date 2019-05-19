@@ -34,10 +34,12 @@ void buy();
 void sell();
 void travel();
 
+void randomEvent();
+
 int getActionInput();
 
-void defaultInit();
-
+void defaultPrices();
+void init();
 int dumbTix[3];
 
 int gameRunning = 1;
@@ -51,8 +53,9 @@ int score = 0;
 int main()
 {
 	/* Initialization stuff */
-	defaultInit();
-
+	init();
+	defaultPrices();
+	
 	printTitle(" SCALPER WARS ");
 	mainMenu();
 	while(gameRunning) {
@@ -63,13 +66,17 @@ int main()
 
 }
 
-void defaultInit()
+void defaultPrices()
 {
 	dumbTix[N_BUFFALO] = 20;
 	dumbTix[S_BUFFALO] = 30;
 	dumbTix[ORCHARD]   = 35;
 
-	tixHeld[0] = 0;
+}
+
+void init()
+{
+		tixHeld[0] = 0;
 }
 
 void printTitle(char str[])
@@ -198,6 +205,7 @@ void travel()
 	}
 	currentLocale = l - 1;
 	++day;
+	randomEvent();
 }
 
 void buy()
@@ -256,4 +264,54 @@ int getActionInput()
 				i = c - '0';
 		}
 		return i;
+}
+
+void randomEvent()
+{
+	/* This probably should go somewhere smarter */
+	defaultPrices();
+
+	float r = rand() / (float)RAND_MAX;
+
+	if(r > 0.7) {
+		r = (rand() / (float)RAND_MAX) * 4;
+		switch((int)r) {
+			case 0:
+					/* Tickets skyrocket */
+					r = rand() / (float)RAND_MAX;
+					dumbTix[N_BUFFALO] += r * 15;
+					dumbTix[S_BUFFALO] += r * 15;
+					dumbTix[ORCHARD] += r * 15;
+					printf("Ticket prices just jumped!\n");
+					break;
+			case 1:
+					/* Tickets plummet */
+					r = rand() / (float)RAND_MAX;
+					dumbTix[N_BUFFALO] -= r * 5;
+					dumbTix[S_BUFFALO] -= r * 5;
+					dumbTix[ORCHARD] -= r * 5;
+					printf("Ticket prices just dropped!\n");
+					break;
+			case 2:
+					/* Get mugged */
+					r = rand() / (float)RAND_MAX;
+					if(r >= 0.5) {
+							cash -= (rand() / (float)RAND_MAX) * 20;
+							if(cash < 0)
+									cash = 0;
+							printf("Some dude just mugged you on the bus!!\n");
+					} else {
+							tixHeld[0] -= (rand()/(float)RAND_MAX) * 10;
+							if(tixHeld[0] < 0)
+									tixHeld[0] = 0;
+							printf("Somebody lifted some tickets off you on the bus! Bummer!\n");
+					}
+					break;
+			case 3:
+					/* Score free tickets */
+					break;
+			default:
+					break;
+		}
+	}
 }
