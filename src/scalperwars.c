@@ -110,7 +110,7 @@ void mainMenu()
 void gameLoop()
 {
 	printBar();
-	if(day > 30) {
+	if(day > 14) {
 		gameRunning = 0;
 		return;
 	}
