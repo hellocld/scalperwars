@@ -124,7 +124,7 @@ void gameLoop()
 	// Print locale info
 	printf("WELCOME TO ");
 	printLocale(currentLocale);
-	printf("It's day %d of 30\n\n", day);
+	printf("It's day %d of 14\n\n", day);
 	printTicketStats(currentLocale);
 	// Select Action
 	playerAction();
