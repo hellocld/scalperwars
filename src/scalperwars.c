@@ -31,6 +31,7 @@ void printPlayerStats();
 void playerAction();
 
 void buy();
+void sell();
 void travel();
 
 int getActionInput();
@@ -171,6 +172,7 @@ void playerAction()
 			break;
 		case 2:
 			printf("Sell!\n");
+			sell();
 			break;
 		case 3:
 			printf("Jet!\n");
@@ -211,15 +213,38 @@ void buy()
 		}
 		s[i] = c;
 	}
-	s[++i] = '\0';
+	s[i] = '\0';
 	int num = atoi(s);
 	int cost = num * dumbTix[currentLocale];
 	if(cost > cash) {
-		printf("You can't afford that!\n");
-		buy();
+		printf("You can't afford $%d worth of tickets!\n", cost);
+		return;
 	}
 	cash -= cost;
 	tixHeld[0] += num;
+}
+
+void sell()
+{
+	printf("How many? ");
+	char s[MAXSTRING];
+	char c;
+	int i;
+	for(i = 0; (c = getchar()) != EOF && c != '\n'; ++i) {
+		if(!isdigit(c)) {
+			printf("That's not a number, yo!\n");
+			sell();
+		}
+		s[i] = c;
+	}
+	s[i] = '\0';
+	int num = atoi(s);
+	if(num > tixHeld[0]) {
+		printf("You don't have that many tickets to sell, dog!\n");
+		return;
+	}
+	tixHeld[0] -= num;
+	cash += num * dumbTix[currentLocale];
 }
 
 int getActionInput()
